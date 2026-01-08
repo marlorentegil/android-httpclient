@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import es.fpsumma.dam2.api.model.Tarea
+import es.fpsumma.dam2.api.ui.screen.tareas.TareasUIState
+import kotlinx.coroutines.flow.map
 
 class TareasViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -19,8 +22,14 @@ class TareasViewModel(app: Application) : AndroidViewModel(app) {
 
     private val dao = db.tareaDao()
 
-    val tareas: StateFlow<List<TareaEntity>> =
-        dao.getAllTareas().stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    val state: StateFlow<TareasUIState> =
+        dao.getAllTareas()
+            .map { lista ->
+                TareasUIState(
+                    tareas = lista.map { Tarea(it.id, it.titulo, it.descripcion) }
+                )
+            }
+            .stateIn(viewModelScope, SharingStarted.Lazily, TareasUIState())
 
     fun getTarea(id: Int): StateFlow<TareaEntity?> =
         dao.getTarea(id).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
