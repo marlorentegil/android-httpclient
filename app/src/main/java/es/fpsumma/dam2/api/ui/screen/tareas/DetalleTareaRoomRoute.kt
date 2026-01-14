@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import es.fpsumma.dam2.api.model.Tarea
 import es.fpsumma.dam2.api.viewmodel.TareasViewModel
 
 @Composable
@@ -20,7 +21,7 @@ fun DetalleTareaRoomRoute(
     // Si tu ViewModel ya devuelve un objeto Tarea, puedes pasar 'tareaEntity' directamente.
     // Si devuelve una Entity diferente, aquí se hace la conversión.
     DetalleTareaContent(
-        tarea = tarea,
+        tarea = tareaEntity,
         onBack = { navController.popBackStack() },
         onSave = { titulo, descripcion ->
             vm.updateTarea(id, titulo, descripcion)

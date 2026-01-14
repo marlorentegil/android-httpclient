@@ -16,7 +16,7 @@ import es.fpsumma.dam2.api.viewmodel.TareasViewModel
 
 @Composable
 fun AppNavHost(navController: NavHostController, tareasViewModel: TareasViewModel) {
-    NavHost(navController = navController, startDestination = Routes.TAREA_LISTADO) {
+    NavHost(navController = navController, startDestination = Routes.TAREA_LISTADO_API) {
         composable(Routes.TAREA_LISTADO) { ListadoTareasRoomRoute(navController, tareasViewModel) }
         composable(Routes.TAREA_ADD) { NuevaTareaRoomRoute(navController, tareasViewModel) }
         composable(

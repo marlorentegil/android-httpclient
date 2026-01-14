@@ -46,7 +46,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.material3)
     // --- Compose (use the latest stable BOM) ---
     val composeBom = platform("androidx.compose:compose-bom:2025.12.00")
     implementation(composeBom)
