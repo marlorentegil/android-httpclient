@@ -11,7 +11,7 @@ import es.fpsumma.dam2.api.viewmodel.TareasViewModel
 
 
 @Composable
-fun ListadoTareasRemoteRoute(
+fun ListadoTareasRoomRoute(
     navController: NavController,
     vm: TareasViewModel,
     modifier: Modifier = Modifier,
