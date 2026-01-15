@@ -25,6 +25,9 @@ fun ListadoTareasRemoteRoute(
         vm.loadTareas()
     }
 
+
+
+
     // 3. Pasamos el UIState al Content
     // Según las instrucciones, onDelete se pasa vacío: {}
     ListadoTareasContent(
@@ -33,7 +36,7 @@ fun ListadoTareasRemoteRoute(
         onAdd = { navController.navigate(Routes.TAREA_ADD) },
         onOpenDetalle = { id -> navController.navigate(Routes.tareaView(id)) },
         modifier = modifier,
-        onDelete = {}
+        onDelete = {vm.deleteTareaById()}
     )
 
 }

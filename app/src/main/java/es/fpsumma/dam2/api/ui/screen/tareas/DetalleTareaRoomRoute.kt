@@ -15,13 +15,13 @@ fun DetalleTareaRoomRoute(
     vm: TareasViewModel,
     modifier: Modifier = Modifier,
 ) {
-    // Recolectamos el Flow del ViewModel
+    //Cogemos el Flow del ViewModel
     val tareaEntity by vm.getTarea(id).collectAsState(initial = null)
 
-    // Si tu ViewModel ya devuelve un objeto Tarea, puedes pasar 'tareaEntity' directamente.
+
     // Si devuelve una Entity diferente, aquí se hace la conversión.
     DetalleTareaContent(
-        tarea = tareaEntity,
+        tarea = Tarea,
         onBack = { navController.popBackStack() },
         onSave = { titulo, descripcion ->
             vm.updateTarea(id, titulo, descripcion)

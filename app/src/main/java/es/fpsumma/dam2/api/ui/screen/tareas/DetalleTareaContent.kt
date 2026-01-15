@@ -26,12 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import es.fpsumma.dam2.api.model.Tarea
-import es.fpsumma.dam2.api.ui.navegation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleTareaContent(
-    tarea: Tarea?,
+    tarea: Tarea,
     onBack: () -> Unit,
     onSave: (String, String) -> Unit, // Cambiado de onAdd a onSave para coincidir con el Route
     modifier: Modifier = Modifier
@@ -41,7 +40,7 @@ fun DetalleTareaContent(
 
     // Sincroniza los campos cuando la tarea carga desde la base de datos
     LaunchedEffect(tarea) {
-        tarea?.let {
+        tarea.let {
             titulo = it.titulo
             descripcion = it.descripcion
         }

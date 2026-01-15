@@ -68,10 +68,8 @@ fun ListadoTareasScreen(
             )
         }
     ) { innerPadding ->
-
-
+        
         tareas?.let {
-
 
             LazyColumn(
                 modifier = modifier
@@ -84,9 +82,7 @@ fun ListadoTareasScreen(
                     key = { it.id }
                 ) { tarea ->
                     Card(
-                        onClick = {
-                            navController.navigate(Routes.tareaView(tarea.id))
-                        },
+                        onClick = { navController.navigate(Routes.tareaView(tarea.id)) },
                         modifier = modifier,
                         shape = RoundedCornerShape(16.dp)
                     ) {
@@ -122,3 +118,5 @@ fun ListadoTareasScreen(
         }
     }
 }
+
+

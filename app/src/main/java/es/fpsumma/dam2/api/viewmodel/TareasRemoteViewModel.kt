@@ -1,5 +1,7 @@
 package es.fpsumma.dam2.api.viewmodel
 
+
+import android.R.attr.id
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.fpsumma.dam2.api.data.remote.RetrofitClient
@@ -9,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.collections.emptyList
 
 /**
  * ViewModel "remoto": obtiene datos desde una API (Retrofit) y expone un estado
@@ -87,6 +90,37 @@ class TareasRemoteViewModel : ViewModel() {
             _state.update { current ->
                 current.copy(
                     error = e.message ?: "Error cargando tareas",
+                    loading = false
+                )
+            }
+        }
+    }
+
+
+
+    fun deleteTareaById() = viewModelScope.launch {
+
+        //Antes de llamar a la red, avisamos a la UI de que estamos cargando
+        _state.update { current ->
+            current.copy(loading = true, error = null)
+        }
+
+        runCatching {
+
+            //Llamada HTTP (suspend) al endpoint: DELETE api/tareas/{id}
+            api.deleteById(id)
+
+        }.onSuccess {
+
+            //Lista las tareas, menos la que hemos eliminado
+            loadTareas()
+
+        }.onFailure { e ->
+
+            //Si falla y no elimina la tarea
+            _state.update { current ->
+                current.copy(
+                    error = e.message ?: "Error eliminando la tarea",
                     loading = false
                 )
             }
