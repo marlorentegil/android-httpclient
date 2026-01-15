@@ -5,6 +5,7 @@ import android.R.attr.id
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.fpsumma.dam2.api.data.remote.RetrofitClient
+import es.fpsumma.dam2.api.data.remote.dto.TareaDTO
 import es.fpsumma.dam2.api.model.Tarea
 import es.fpsumma.dam2.api.ui.screen.tareas.TareasUIState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -126,4 +127,89 @@ class TareasRemoteViewModel : ViewModel() {
             }
         }
     }
+
+
+
+    fun crearTarea(titulo: String, descripcion: String) = viewModelScope.launch {
+        _state.update { it.copy(loading = true, error = null) }
+
+        runCatching {
+
+            // Convertimos los datos de la UI a un DTO para enviarlo a la API
+            val nuevaTareaDto = TareaDTO(id = 0, titulo = titulo, descripcion = descripcion)
+            val res = api.crearTarea(nuevaTareaDto)
+
+            //Si el HTTP no es 2xx, lo convertimos en excepción para ir a onFailure(...)
+            if (!res.isSuccessful) throw Exception("Error al crear: ${res.code()}")
+
+        }.onSuccess {
+
+            // Refresca la lista
+            loadTareas()
+
+        }.onFailure { e ->
+
+            //Si falla y no crea la tarea
+            _state.update { it.copy(error = e.message ?: "Error creando la tarea", loading = false) }
+        }
+    }
+
+
+    fun actualizarTarea() = viewModelScope.launch {
+
+        //Antes de llamar a la red, avisamos a la UI de que estamos cargando
+        _state.update { current ->
+            current.copy(loading = true, error = null)
+        }
+
+        runCatching {
+
+            val actualizarTareaDto = TareaDTO(id = id, titulo = titulo, descripcion = descripcion)
+            val res = api.crearTarea(nuevaTareaDto)
+
+            //Llamada HTTP (suspend) al endpoint: DELETE api/tareas/{id}
+            api.actualizarTarea(id, tarea: TareaEntity)
+
+        }.onSuccess {
+
+            //Lista las tareas, añadiendo la que hemos creado
+            loadTareas()
+
+        }.onFailure { e ->
+
+            //Si falla y no elimina la tarea
+            _state.update { current ->
+                current.copy(
+                    error = e.message ?: "Error eliminando la tarea",
+                    loading = false
+                )
+            }
+        }
+    }
+
+
+
+    private val _selected = MutableStateFlow<Tarea?>(null)
+    val selected: StateFlow<Tarea?> = _selected
+
+    fun loadTareaDetalle(id: Int) = viewModelScope.launch {
+        runCatching {
+
+            val res = api.obtenerDetalle(id)
+            if (!res.isSuccessful) error("HTTP ${res.code()}")
+            res.body() ?: error("Sin body")
+
+        }.onSuccess { dto ->
+
+            _selected.value = Tarea(dto.id, dto.titulo, dto.descripcion)
+
+        }.onFailure { e ->
+
+            _state.update { it.copy(error = e.message ?: "Error cargando detalle") }
+
+        }
+    }
+
+
+
 }

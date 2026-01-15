@@ -68,7 +68,7 @@ fun ListadoTareasScreen(
             )
         }
     ) { innerPadding ->
-        
+
         tareas?.let {
 
             LazyColumn(
