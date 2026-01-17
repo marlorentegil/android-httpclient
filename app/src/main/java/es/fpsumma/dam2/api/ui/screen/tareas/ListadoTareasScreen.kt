@@ -29,20 +29,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import es.fpsumma.dam2.api.ui.navegation.Routes
-import es.fpsumma.dam2.api.viewmodel.TareasViewModel
-
-
+import es.fpsumma.dam2.api.viewmodel.TareasRemoteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ListadoTareasScreen(
     navController: NavController,
-    vm: TareasViewModel,
+    vm: TareasRemoteViewModel, // Usamos el ViewModel remoto
     modifier: Modifier = Modifier
 ) {
 
-    val tareas by vm.tareas.collectAsState()
+    // Cogemos el Flow del ViewModel (Observamos el state del RemoteViewModel)
+    val uiState by vm.state.collectAsState()
+    val tareas = uiState.tareas
 
     fun handleDeleteTarea(id: Int) {
         vm.deleteTareaById(id)
@@ -51,7 +51,7 @@ fun ListadoTareasScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Listado de tareas") },
+                title = { Text("Listado de tareas (API)") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
@@ -59,35 +59,34 @@ fun ListadoTareasScreen(
                 },
                 actions = {
                     Row {
-                        IconButton(onClick = { navController.navigate(Routes.TAREA_ADD) }) {
+                        // Navegamos a la ruta de añadir tareas (versión remota)
+                        IconButton(onClick = { navController.navigate(Routes.TAREA_ADD_API) }) {
                             Icon(Icons.AutoMirrored.Filled.NoteAdd, contentDescription = "Añadir")
                         }
-
                     }
                 }
             )
         }
     ) { innerPadding ->
 
-        tareas?.let {
-
+        // Comprobamos si hay tareas en el estado
+        if (tareas.isNotEmpty()) {
             LazyColumn(
                 modifier = modifier
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-
                 items(
                     items = tareas,
                     key = { it.id }
                 ) { tarea ->
                     Card(
+                        // Mantenemos la navegación de detalle original según tu Routes.kt
                         onClick = { navController.navigate(Routes.tareaView(tarea.id)) },
-                        modifier = modifier,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         ListItem(
-
                             headlineContent = { Text(tarea.titulo) },
                             supportingContent = { Text(tarea.descripcion) },
                             trailingContent = {
@@ -105,18 +104,19 @@ fun ListadoTareasScreen(
                     }
                 }
             }
-        } ?: Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-        ) {
-            Row(modifier = modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-                Text("No hay tareas aún")
+        } else {
+            // Mantenemos la estructura de la columna para cuando no hay datos
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp),
+            ) {
+                Row(modifier = modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+                    // Si está cargando mostramos un texto, si no, el mensaje de vacío
+                    Text(if (uiState.loading) "Cargando..." else "No hay tareas aún")
+                }
             }
-
         }
     }
 }
-
-

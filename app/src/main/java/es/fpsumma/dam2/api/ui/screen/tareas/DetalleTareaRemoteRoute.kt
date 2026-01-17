@@ -6,31 +6,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import es.fpsumma.dam2.api.viewmodel.TareasRemoteViewModel
 
 @Composable
-fun DetalleTareaRoomRoute(
+fun DetalleTareaRemoteRoute(
     id: Int,
     navController: NavController,
-    vm: Unit,
+    vm: TareasRemoteViewModel, // Recibe el remoto
     modifier: Modifier = Modifier,
 ) {
-    // Observamos el estado (tipo Tarea?)
-    val tarea by vm.selected.collectAsState()
+    val tarea by vm.selected.collectAsState() //
 
     LaunchedEffect(id) {
         vm.loadTareaDetalle(id) // Carga desde la API
     }
 
-    // SOLUCIÓN: Solo pintamos si tarea no es null
+    // El error "Argument type mismatch" se va al usar este check de nulabilidad
     tarea?.let { tareaSegura ->
         DetalleTareaContent(
-            tarea = tareaSegura, // Ahora ya no da error de tipo
+            tarea = tareaSegura,
             onBack = { navController.popBackStack() },
             onSave = { titulo, descripcion ->
                 vm.actualizarTarea(id, titulo, descripcion)
                 navController.popBackStack()
-            },
-            modifier = modifier
+            }
         )
     }
 }

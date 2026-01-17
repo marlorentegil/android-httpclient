@@ -1,28 +1,21 @@
 package es.fpsumma.dam2.api.ui.screen.tareas
 
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import es.fpsumma.dam2.api.ui.navegation.Routes
 import es.fpsumma.dam2.api.viewmodel.TareasRemoteViewModel
 
-
 @Composable
-fun NuevaTareaRoomRoute(
+fun NuevaTareaRemoteRoute(
     navController: NavController,
-    vm: TareasRemoteViewModel, // Cambiamos TareasViewModel por TareasRemoteViewModel
+    vm: TareasRemoteViewModel, // Recibe el remoto
     modifier: Modifier = Modifier,
 ) {
     NuevaTareaContent(
-        modifier = modifier,
         onBack = { navController.popBackStack() },
         onSave = { titulo, descripcion ->
-            //Guardamos en la base de datos a través del VM
-            vm.crearTarea(titulo, descripcion)
-            //Navegamos hacia atrás o al listado
-            navController.navigate(Routes.TAREA_LISTADO)
+            vm.crearTarea(titulo, descripcion) // Usa la función de la API
+            navController.popBackStack()
         }
     )
 }
-
